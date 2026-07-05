@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: payment-transactions-api
+
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@//localhost:1521/XEPDB1}
+    username: ${DB_USER:payments}
+    password: ${DB_PASSWORD:payments123}
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "io.github.abbas1123.payments.*"
+        spring.json.value.default.type: io.github.abbas1123.payments.event.TransactionEvent
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+server:
+  port: 8080
+
+logging:
+  level:
+    io.github.abbas1123.payments: INFO
